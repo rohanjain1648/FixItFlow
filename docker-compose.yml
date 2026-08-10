@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  fixitflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fixitflow_app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:./dev.db
+      - CALLE_SOURCE=skills_sh
+      - CALLE_INTEGRATION=skills_sh_skill
+      - CALLE_INTEGRATION_VERSION=0.1.0
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    restart: always
+    volumes:
+      - sqlite_data:/app/prisma
+
+volumes:
+  sqlite_data:
