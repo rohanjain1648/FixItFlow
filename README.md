@@ -421,15 +421,17 @@ fixitflow/
 ## 🗺️ Roadmap
 
 - [x] Core CALL-E integration (`plan_call`, `run_call`, `get_call_run`)
-- [x] Multi-step dispatch workflow (triage → source → match → confirm)
-- [x] Real-time dashboard with call status streaming
+- [x] Multi-step autonomous dispatch engine (Triage → Source → Match → Confirm)
+- [x] High-aesthetic Next.js 16 Property Management Dashboard
+- [x] Contractor scoring & ranking algorithm (rating, pricing, availability weighting)
+- [x] Full REST API suite (`/api/tickets`, `/api/tickets/[id]/dispatch`, `/api/contractors`, `/api/properties`)
+- [x] Prisma 7 database schema & mock data seeder
+- [x] CALL-E call logs, transcript inspector, & voice recording visualizer
 - [ ] SMS fallback for contractors who don't answer
-- [ ] Multi-language support (CALL-E's AI adapts to the contractor's language)
-- [ ] Calendar integration (Google Calendar / Outlook)
-- [ ] Tenant self-service portal
-- [ ] Mobile app (React Native)
-- [ ] Batch dispatch — handle 10+ tickets simultaneously
-- [ ] Contractor rating system based on call outcomes
+- [ ] Multi-language support (CALL-E AI voice adapting per contractor dialect)
+- [ ] Calendar integration (Google Calendar & Outlook sync)
+- [ ] Tenant self-service ticket submission portal
+- [ ] Batch dispatch engine — handling 10+ tickets simultaneously
 
 ---
 
