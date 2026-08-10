@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Property {
+  id        String   @id @default(uuid())
+  title     String
+  address   String
+  unit      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenants   Tenant[]
+  tickets   Ticket[]
+}
+
+model Tenant {
+  id         String   @id @default(uuid())
+  name       String
+  phone      String
+  email      String?
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tickets    Ticket[]
+}
+
+model Contractor {
+  id          String   @id @default(uuid())
+  name        String
+  phone       String
+  trade       String   // e.g. Plumbing, Electrical, HVAC, Roofing, General
+  rating      Float    @default(4.5)
+  hourlyRate  Float?
+  location    String?
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tickets     Ticket[]
+}
+
+model Ticket {
+  id                   String      @id @default(uuid())
+  title                String
+  description          String
+  category             String      @default("General") // Plumbing, Electrical, HVAC, etc.
+  priority             String      @default("MEDIUM")  // LOW, MEDIUM, HIGH, EMERGENCY
+  status               String      @default("OPEN")    // OPEN, TRIAGING, TRIAGED, SOURCING, MATCHED, CONFIRMED, COMPLETED, CANCELLED
+  
+  propertyId           String
+  property             Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  tenantId             String
+  tenant               Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  selectedContractorId String?
+  selectedContractor   Contractor? @relation(fields: [selectedContractorId], references: [id], onDelete: SetNull)
+  
+  agreedPrice          Float?
+  scheduledAt          String?     // e.g. "2:00 PM Today" or ISO string
+  triageNotes          String?
+  
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  callLogs             CallLog[]
+}
+
+model CallLog {
+  id            String   @id @default(uuid())
+  ticketId      String
+  ticket        Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  
+  callType      String   // TRIAGE, SOURCING, CONFIRMATION
+  targetPhone   String
+  targetName    String
+  targetRole    String   // TENANT, CONTRACTOR
+  
+  status        String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, FAILED
+  planId        String?
+  runId         String?
+  
+  transcript    String?
+  extractedData String?  // JSON stringified key-value data extracted by CALL-E
+  summary       String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
