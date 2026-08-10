@@ -1,6 +1,8 @@
 import { db } from "@/lib/db";
 import { calle } from "@/lib/calle";
 import { rankContractors } from "@/lib/scoring";
+import { smsService } from "@/lib/sms";
+import { calendarService } from "@/lib/calendar";
 
 export class DispatchEngine {
   /**
@@ -70,7 +72,7 @@ export class DispatchEngine {
   }
 
   /**
-   * Phase 2: Sourcing Calls to Contractors
+   * Phase 2: Sourcing Calls to Contractors (with Multi-Language & SMS Fallback)
    */
   async sourceContractors(ticketId: string) {
     const ticket = await db.ticket.findUnique({
@@ -99,12 +101,17 @@ export class DispatchEngine {
     const sourcingResults = [];
 
     for (const contractor of targetContractors) {
+      // 🌐 Feature 2: Multi-Language support per contractor dialect
+      const language = contractor.language || "en";
+
       const plan = await calle.planCall({
         objective: `Inquire about contractor availability & quote for ${ticket.category} job: ${ticket.title}`,
+        language,
         context: {
           contractorName: contractor.name,
           issue: ticket.title,
           address: ticket.property.address,
+          preferredLanguage: language,
         },
         dataToExtract: ["availableToday", "quotedPrice", "earliestSlot"],
       });
@@ -118,6 +125,20 @@ export class DispatchEngine {
 
       const quotedPrice = (result.extractedData.quotedPrice as number) || contractor.hourlyRate || 140;
 
+      // 📱 Feature 1: Check if SMS Fallback is needed (e.g., if call failed/no-answer simulation)
+      let smsFallbackSent = false;
+      if (result.status === "FAILED") {
+        await smsService.sendJobNotification({
+          contractorName: contractor.name,
+          contractorPhone: contractor.phone,
+          ticketTitle: ticket.title,
+          propertyAddress: ticket.property.address,
+          category: ticket.category,
+          priority: ticket.priority,
+        });
+        smsFallbackSent = true;
+      }
+
       await db.callLog.create({
         data: {
           ticketId: ticket.id,
@@ -125,12 +146,15 @@ export class DispatchEngine {
           targetPhone: contractor.phone,
           targetName: contractor.name,
           targetRole: "CONTRACTOR",
-          status: "COMPLETED",
+          status: smsFallbackSent ? "SMS_SENT" : "COMPLETED",
           planId: plan.planId,
           runId: run.runId,
           transcript: result.transcript,
-          extractedData: JSON.stringify({ ...result.extractedData, quotedPrice }),
-          summary: `Contacted ${contractor.name}. Quote: $${quotedPrice}.`,
+          extractedData: JSON.stringify({ ...result.extractedData, quotedPrice, language }),
+          summary: smsFallbackSent
+            ? `Phone call unreachable. SMS Fallback alert delivered to ${contractor.name} (${language.toUpperCase()}).`
+            : `Contacted ${contractor.name} in ${language.toUpperCase()}. Quote: $${quotedPrice}.`,
+          smsFallbackSent,
         },
       });
 
@@ -165,7 +189,7 @@ export class DispatchEngine {
   }
 
   /**
-   * Phase 3: Confirmation Call to Tenant
+   * Phase 3: Confirmation Call to Tenant (with Calendar Sync)
    */
   async confirmAppointment(ticketId: string) {
     const ticket = await db.ticket.findUnique({
@@ -196,6 +220,17 @@ export class DispatchEngine {
 
     const result = await calle.getCallRun(run.runId);
 
+    // 📅 Feature 3: Calendar Integration - Sync Event
+    const calEvent = await calendarService.createEvent({
+      ticketId: ticket.id,
+      title: ticket.title,
+      description: ticket.description,
+      location: ticket.property.address,
+      tenantName: ticket.tenant.name,
+      contractorName: ticket.selectedContractor.name,
+      scheduledAt: scheduledSlot,
+    });
+
     await db.callLog.create({
       data: {
         ticketId: ticket.id,
@@ -207,8 +242,8 @@ export class DispatchEngine {
         planId: plan.planId,
         runId: run.runId,
         transcript: result.transcript,
-        extractedData: JSON.stringify(result.extractedData),
-        summary: `Appointment confirmed with ${ticket.tenant.name} for ${scheduledSlot} with ${ticket.selectedContractor.name}.`,
+        extractedData: JSON.stringify({ ...result.extractedData, calendarEventId: calEvent.eventId }),
+        summary: `Appointment confirmed with ${ticket.tenant.name} for ${scheduledSlot} with ${ticket.selectedContractor.name}. Calendar event synced (${calEvent.eventId}).`,
       },
     });
 
@@ -217,6 +252,7 @@ export class DispatchEngine {
       data: {
         status: "CONFIRMED",
         scheduledAt: scheduledSlot,
+        calendarEventId: calEvent.eventId,
       },
     });
 

@@ -78,30 +78,33 @@ async function main() {
       rating: 4.9,
       hourlyRate: 120,
       location: "Downtown Springfield",
+      language: "en",
       isAvailable: true,
     },
   });
 
   const plumber2 = await db.contractor.create({
     data: {
-      name: "FastFlow Emergency Pipe Repair",
+      name: "FastFlow Emergency Pipe Repair (Carlos Martinez)",
       phone: "+15550199887",
       trade: "Plumbing",
       rating: 4.7,
       hourlyRate: 145,
       location: "West End",
+      language: "es",
       isAvailable: true,
     },
   });
 
   const electrician1 = await db.contractor.create({
     data: {
-      name: "VoltMaster Electrical Inc",
+      name: "VoltMaster Electrical Inc (Jean-Luc)",
       phone: "+15550177665",
       trade: "Electrical",
       rating: 4.8,
       hourlyRate: 130,
       location: "Central Bay",
+      language: "fr",
       isAvailable: true,
     },
   });

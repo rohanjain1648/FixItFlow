@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Phone, Calendar, User, Building2, Play, CheckCircle, Loader2, Sparkles } from "lucide-react";
+import { LanguageBadge } from "./LanguageBadge";
 
 export interface TicketData {
   id: string;
@@ -26,6 +27,7 @@ export interface TicketData {
     name: string;
     phone: string;
     rating: number;
+    language?: string;
   } | null;
   callLogs?: Array<{
     id: string;
@@ -134,12 +136,15 @@ export const TicketCard: React.FC<TicketCardProps> = ({ ticket, onSelect, onDisp
         {ticket.selectedContractor && (
           <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-3 text-xs">
             <div className="flex items-center justify-between font-semibold text-emerald-400">
-              <span>Matched: {ticket.selectedContractor.name}</span>
+              <span className="truncate">Matched: {ticket.selectedContractor.name}</span>
               <span className="font-bold text-white">${ticket.agreedPrice}</span>
             </div>
-            <div className="mt-1 flex items-center gap-2 text-emerald-300/80 text-[11px]">
-              <Calendar className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Scheduled for {ticket.scheduledAt || "Today"}</span>
+            <div className="mt-2 flex items-center justify-between gap-2 text-emerald-300/80 text-[11px]">
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-emerald-400" />
+                <span>Scheduled for {ticket.scheduledAt || "Today"}</span>
+              </div>
+              <LanguageBadge language={ticket.selectedContractor.language || "en"} />
             </div>
           </div>
         )}

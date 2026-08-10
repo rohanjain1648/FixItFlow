@@ -427,11 +427,11 @@ fixitflow/
 - [x] Full REST API suite (`/api/tickets`, `/api/tickets/[id]/dispatch`, `/api/contractors`, `/api/properties`)
 - [x] Prisma 7 database schema & mock data seeder
 - [x] CALL-E call logs, transcript inspector, & voice recording visualizer
-- [ ] SMS fallback for contractors who don't answer
-- [ ] Multi-language support (CALL-E AI voice adapting per contractor dialect)
-- [ ] Calendar integration (Google Calendar & Outlook sync)
-- [ ] Tenant self-service ticket submission portal
-- [ ] Batch dispatch engine — handling 10+ tickets simultaneously
+- [x] SMS fallback for contractors who don't answer (`SmsFallbackService`)
+- [x] Multi-language support (CALL-E AI voice adapting per contractor dialect: EN, ES, FR, etc.)
+- [x] Calendar integration (Google Calendar & ICS file download engine)
+- [x] Tenant self-service ticket submission portal (`/submit`)
+- [x] Batch dispatch engine — handling 10+ tickets simultaneously in parallel
 
 ---
 

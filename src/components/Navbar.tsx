@@ -39,8 +39,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onNewTicket }) => {
           <span>CALL-E SDK Connected & Ready</span>
         </div>
 
-        {/* Action Button */}
+        {/* Action Buttons */}
         <div className="flex items-center gap-3">
+          <a
+            href="/submit"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/10 px-3.5 py-2 text-xs font-semibold text-blue-400 hover:bg-blue-500/20 transition-all"
+          >
+            <span>Tenant Portal</span>
+          </a>
+
           <button
             onClick={onNewTicket}
             className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98]"

@@ -6,6 +6,8 @@ import { MetricsHeader } from "@/components/MetricsHeader";
 import { TicketCard, TicketData } from "@/components/TicketCard";
 import { TicketDetailModal } from "@/components/TicketDetailModal";
 import { NewTicketModal } from "@/components/NewTicketModal";
+import { BatchDispatchPanel } from "@/components/BatchDispatchPanel";
+import { CalendarWidget } from "@/components/CalendarWidget";
 import { Filter, Sparkles, RefreshCw, Layers } from "lucide-react";
 
 export default function Dashboard() {
@@ -92,6 +94,15 @@ export default function Dashboard() {
           confirmedTickets={confirmedCount}
           totalCalls={totalCallsCount}
         />
+
+        {/* Batch Dispatch Engine Panel */}
+        <BatchDispatchPanel
+          openTicketsCount={tickets.filter((t) => t.status === "OPEN").length}
+          onBatchComplete={fetchTickets}
+        />
+
+        {/* Synced Calendar Appointments Widget */}
+        <CalendarWidget />
 
         {/* Filter Controls Bar */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-800 bg-slate-900/60 p-4 backdrop-blur-md">

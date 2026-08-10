@@ -7,6 +7,7 @@ export interface PlanCallInput {
   objective: string;
   context: Record<string, unknown>;
   dataToExtract?: string[];
+  language?: string;
 }
 
 export interface PlanCallOutput {
