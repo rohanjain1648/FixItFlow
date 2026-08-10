@@ -1,5 +1,9 @@
 # 🚀 Devpost Submission: FixItFlow
 
+<p align="center">
+  <img src="public/fixitflow-devpost-cover.png" alt="FixItFlow Devpost Cover Image" width="100%" />
+</p>
+
 > **CALL-E Challenge Submission:** "CALL-E: Your Code Is Calling" Hackathon  
 > **Public Repository:** [https://github.com/rohanjain1648/FixItFlow](https://github.com/rohanjain1648/FixItFlow)  
 > **Submitted Pull Request:** `[Paste your PR URL to https://github.com/CALLE-AI/awesome-phone-call-agents here]`
